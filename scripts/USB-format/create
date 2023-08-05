@@ -1,0 +1,40 @@
+#!/usr/bin/env sh 
+
+echo "Do you want to destroy the contents on the usb drive and create new format [y/n]"
+read choice
+
+if [ "$choice" = y ]; then 
+	gpart destroy -F /dev/da0 
+	gpart create -s mbr /dev/da0 
+        gpart add -t fat32 /dev/da0  
+        echo "give the usb a name"
+	read name 
+        newfs_msdos -L "$name" -F 32 /dev/da0s1 
+	
+	echo "Want to list it to confirm [y/n]"
+	read confirm 
+	
+	if [ "$confirm" = y ]; then 
+		gpart list | grep da0
+		exit 
+	elif [ "$confirm" = n ]; then
+		exit 
+
+	else
+		echo "Error: Choose y or n"
+		exit 
+
+	fi 
+        	
+	
+
+elif [ "$choice" = n ]; then
+	exit 
+
+else
+	echo "Error: Wrong option choose y or n"
+	exit 
+
+fi 
+
+
